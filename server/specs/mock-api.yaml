@@ -53,3 +53,22 @@ paths:
       responses:
         '204':
           description: Deleted successfully
+  /mock-endpoint-static:
+    get:
+      summary: Get mock data
+      responses:
+        '200':
+          description: Static response for this endpoint
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+                  timestamp:
+                    type: string
+                    format: date-time
+              example: # Added example field
+                data: "This is a static response"
+                timestamp: "2026-02-11T00:00:00Z"
