@@ -1,0 +1,47 @@
+# Node.js dependencies
+node_modules/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+server/.env
+
+# Firebase service account key
+server/src/path/to/serviceAccountKey.json
+
+# Build output
+dist/
+build/
+
+# Temporary files
+*.tmp
+*.temp
+
+# IDE-specific files
+.vscode/
+.idea/
+*.swp
+
+# Docker
+docker-compose.override.yml
+*.env.local
+
+# Coverage reports
+coverage/
+
+# Test output
+*.test-results.json
+
+# Miscellaneous
+.DS_Store
+Thumbs.db
+
+# Generated files in .specify
+.specify/memory/
+.specify/templates/

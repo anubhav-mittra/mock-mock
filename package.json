@@ -1,0 +1,28 @@
+{
+  "name": "mock-mock",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anubhav-mittra/mock-mock.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/anubhav-mittra/mock-mock/issues"
+  },
+  "homepage": "https://github.com/anubhav-mittra/mock-mock#readme",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "firebase-admin": "^13.6.1",
+    "js-yaml": "^4.1.1",
+    "openapi-sampler": "^1.6.2"
+  }
+}
