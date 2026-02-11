@@ -1,11 +1,10 @@
 const express = require('express');
 const fs = require('fs');
 const yaml = require('js-yaml');
-const sampler = require('openapi-sampler');
 const admin = require('firebase-admin');
 const path = require('path');
-const { v4: uuidv4 } = require('uuid'); // Import UUID library
 const staticResponses = require('./config/static-responses'); // Import static responses
+const { handleGet, handlePost, handlePatch, handlePut, handleDelete } = require('./handlers/request-handlers');
 
 // Initialize Firebase Admin SDK if Firestore is enabled
 const isFirestoreAvailable = process.env.USE_FIRESTORE === 'true';
@@ -21,7 +20,7 @@ if (isFirestoreAvailable) {
 const app = express();
 app.use(express.json());
 
-// In-memory database for local development
+// In-memory database for local development (stores documents by collection and ID)
 const inMemoryDB = {};
 
 // Load OpenAPI spec
@@ -39,71 +38,36 @@ const persistentPaths = {
 // Parse OpenAPI spec and create endpoints
 Object.entries(spec.paths).forEach(([route, pathItem]) => {
   console.log(`Registering route: ${route}`); // Debug log for route registration
+  
+  // Convert OpenAPI path syntax {id} to Express path syntax :id
+  const expressRoute = route.replace(/{(\w+)}/g, ':$1');
+  
+  // Extract base route (without parameters) for persistentPaths lookup
+  // E.g., /mock-endpoint/{id} -> /mock-endpoint
+  const baseRoute = route.replace(/\/\{[^}]+\}/g, '');
+  
   Object.entries(pathItem).forEach(([method, operation]) => {
     const httpMethod = method.toLowerCase();
 
     if (['get', 'post', 'put', 'delete', 'patch'].includes(httpMethod)) {
-      console.log(`  Method: ${httpMethod}`); // Debug log for HTTP method
-      app[httpMethod](route, async (req, res) => {
+      console.log(`  Method: ${httpMethod} on ${expressRoute}`); // Debug log for HTTP method
+      
+      app[httpMethod](expressRoute, async (req, res) => {
         try {
-          console.log(`Handling ${httpMethod.toUpperCase()} request for ${route}`); // Debug log for request handling
-          const responseSpec = operation.responses;
-          const statusCode = Object.keys(responseSpec)[0];
-          const schema = responseSpec[statusCode]?.content['application/json']?.schema;
-
-          if (!schema) {
-            console.log(`  No schema defined for ${route}`); // Debug log for missing schema
-            return res.status(404).send('No response defined');
-          }
-
-          const isPersistent = persistentPaths[route];
-          const collectionName = isPersistent?.collection;
+          console.log(`Handling ${httpMethod.toUpperCase()} request for ${expressRoute}`); // Debug log for request handling
           
-          // Check for static response in OpenAPI spec
-          const staticExample = responseSpec[statusCode]?.content['application/json']?.example; // Extract the example from the OpenAPI spec
-          console.log(`Printing schema for ${route}:`, schema); // Debug log for schema
-          console.log(`  Static example for ${route}:`, staticExample); // Debug log for static example
-          if (httpMethod === 'get' && staticExample) {
-            console.log(`  Returning static example for ${route}`); // Debug log for returning static example
-            return res.json(staticExample); // Return the static response from the OpenAPI spec
-          }
-
-          // GET request: Fetch from Firestore or in-memory database
+          // Delegate to appropriate handler
           if (httpMethod === 'get') {
-            if (isPersistent?.store) {
-              if (isFirestoreAvailable) {
-                const snapshot = await db.collection(collectionName).get();
-                const data = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-                return res.json(data.length > 0 ? data : sampler.sample(schema));
-              } else {
-                const data = inMemoryDB[collectionName] || [];
-                return res.json(data.length > 0 ? data : sampler.sample(schema));
-              }
-            }
+            await handleGet(req, res, operation, baseRoute, persistentPaths, db, inMemoryDB, isFirestoreAvailable);
+          } else if (httpMethod === 'post') {
+            await handlePost(req, res, operation, baseRoute, persistentPaths, db, inMemoryDB, isFirestoreAvailable);
+          } else if (httpMethod === 'patch') {
+            await handlePatch(req, res, operation, baseRoute, persistentPaths, db, inMemoryDB, isFirestoreAvailable);
+          } else if (httpMethod === 'put') {
+            await handlePut(req, res, operation, baseRoute, persistentPaths, db, inMemoryDB, isFirestoreAvailable);
+          } else if (httpMethod === 'delete') {
+            await handleDelete(req, res, operation, baseRoute, persistentPaths, db, inMemoryDB, isFirestoreAvailable);
           }
-
-          // POST/PUT/PATCH: Use the actual data sent in the request
-          const sample = req.body;
-
-          if (isPersistent?.store) {
-            if (isFirestoreAvailable) {
-              const docRef = await db.collection(collectionName).add({
-                ...sample,
-                createdAt: admin.firestore.FieldValue.serverTimestamp(),
-                method: httpMethod,
-              });
-              sample.id = docRef.id; // Add Firestore-generated ID to response
-            } else {
-              if (!inMemoryDB[collectionName]) {
-                inMemoryDB[collectionName] = [];
-              }
-              const id = uuidv4(); // Generate a UUID
-              inMemoryDB[collectionName].push({ id, ...sample });
-              sample.id = id; // Add UUID to response
-            }
-          }
-
-          res.status(parseInt(statusCode)).json(sample); // Use the dynamic status code
         } catch (error) {
           console.error('Error:', error);
           res.status(500).json({ error: error.message });

@@ -72,3 +72,76 @@ paths:
               example: # Added example field
                 data: "This is a static response"
                 timestamp: "2026-02-11T00:00:00Z"
+  /mock-endpoint/{id}:
+    get:
+      summary: Get mock data by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  value:
+                    type: integer
+        '404':
+          description: Not Found
+    patch:
+      summary: Update mock data by ID (partial update)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                value:
+                  type: integer
+      responses:
+        '200':
+          description: Successfully updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  value:
+                    type: integer
+        '404':
+          description: Not Found
+    delete:
+      summary: Delete mock data by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Successfully deleted
+        '404':
+          description: Not Found
