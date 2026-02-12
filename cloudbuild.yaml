@@ -1,0 +1,64 @@
+steps:
+  # Build the standard Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'build-standard'
+    args: 
+      - 'build'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/mock-mock:$SHORT_SHA'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/mock-mock:latest'
+      - '.'
+
+  # Build the minimal Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'build-minimal'
+    args: 
+      - 'build'
+      - '-f'
+      - 'Dockerfile.minimal'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/mock-mock:minimal-$SHORT_SHA'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/mock-mock:minimal'
+      - '.'
+
+  # Push all images to Google Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'push-images'
+    args:
+      - 'push'
+      - '--all-tags'
+      - 'gcr.io/$PROJECT_ID/mock-mock'
+    waitFor: ['build-standard', 'build-minimal']
+
+# Optional: Deploy to Cloud Run (uncomment and configure)
+# - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+#   id: 'deploy-cloud-run'
+#   entrypoint: gcloud
+#   args:
+#     - 'run'
+#     - 'deploy'
+#     - 'mock-mock-server'
+#     - '--image=gcr.io/$PROJECT_ID/mock-mock:minimal'
+#     - '--region=us-central1'
+#     - '--platform=managed'
+#     - '--allow-unauthenticated'
+#     - '--port=8080'
+#     - '--memory=512Mi'
+#     - '--cpu=1'
+#     - '--max-instances=10'
+#     - '--set-env-vars=NODE_ENV=production,USE_FIRESTORE=false'
+#   waitFor: ['push-images']
+
+images:
+  - 'gcr.io/$PROJECT_ID/mock-mock:$SHORT_SHA'
+  - 'gcr.io/$PROJECT_ID/mock-mock:latest'
+  - 'gcr.io/$PROJECT_ID/mock-mock:minimal-$SHORT_SHA'
+  - 'gcr.io/$PROJECT_ID/mock-mock:minimal'
+
+options:
+  machineType: 'N1_HIGHCPU_8'
+  logging: CLOUD_LOGGING_ONLY
+  
+timeout: '1200s'

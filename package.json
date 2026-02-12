@@ -4,7 +4,17 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server/src/app.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "docker:build": "docker build -t mock-mock:latest .",
+    "docker:build:minimal": "docker build -f Dockerfile.minimal -t mock-mock:minimal .",
+    "docker:run": "docker run -p 8080:8080 mock-mock:latest",
+    "docker:run:minimal": "docker run -p 8081:8080 mock-mock:minimal",
+    "docker:run:dev": "docker run -p 8080:8080 -e NODE_ENV=development mock-mock:latest",
+    "docker:build:run": "npm run docker:build && npm run docker:run",
+    "gcp:build": "gcloud builds submit --config cloudbuild.yaml .",
+    "gcp:deploy:minimal": "gcloud run deploy mock-mock-server --image gcr.io/$GCP_PROJECT/mock-mock:minimal --platform managed --region us-central1 --allow-unauthenticated",
+    "gcp:deploy:standard": "gcloud run deploy mock-mock-server --image gcr.io/$GCP_PROJECT/mock-mock:latest --platform managed --region us-central1 --allow-unauthenticated"
   },
   "repository": {
     "type": "git",
@@ -23,6 +33,7 @@
     "express": "^5.2.1",
     "firebase-admin": "^13.6.1",
     "js-yaml": "^4.1.1",
-    "openapi-sampler": "^1.6.2"
+    "openapi-sampler": "^1.6.2",
+    "uuid": "^9.0.1"
   }
 }

@@ -1,5 +1,12 @@
 const sampler = require('openapi-sampler');
-const admin = require('firebase-admin');
+// Conditionally load firebase-admin only if available
+let admin;
+try {
+  admin = require('firebase-admin');
+} catch (error) {
+  // Firebase Admin SDK not available - Firestore functions will not work
+  admin = null;
+}
 const { v4: uuidv4 } = require('uuid');
 const {
   getFromFirestore,

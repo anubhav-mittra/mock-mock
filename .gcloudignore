@@ -1,0 +1,46 @@
+# Ignore files for Cloud Build to speed up builds and reduce upload size
+
+.git
+.gitignore
+.github
+
+# Node modules (will be installed in container)
+node_modules
+
+# Documentation
+*.md
+!README.md
+docs/
+
+# Development files
+.vscode
+.idea
+*.swp
+.DS_Store
+
+# Test files
+tests/
+*.test.js
+coverage/
+.nyc_output
+
+# CI/CD files from other platforms
+.travis.yml
+.circleci/
+.gitlab-ci.yml
+
+# Local environment
+.env
+.env.local
+.env.*.local
+
+# Docker files (already in build context)
+Dockerfile
+Dockerfile.minimal
+.dockerignore
+docker-compose.yml
+
+# Logs
+logs/
+*.log
+npm-debug.log*

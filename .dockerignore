@@ -1,0 +1,55 @@
+# Dependencies
+node_modules
+npm-debug.log
+yarn-error.log
+
+# Testing
+coverage
+*.test.js
+server/tests
+.nyc_output
+
+# Development files
+.git
+.gitignore
+.gitattributes
+.editorconfig
+.eslintrc*
+.prettierrc*
+
+# Documentation and specs (only if not needed in runtime)
+specs
+*.md
+README.md
+
+# IDE and editor files
+.vscode
+.idea
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Docker files
+Dockerfile
+Dockerfile.minimal
+.dockerignore
+docker-compose.yml
+
+# CI/CD
+.github
+.gitlab-ci.yml
+.travis.yml
+
+# Build outputs
+dist
+build
+
+# Logs
+logs
+*.log

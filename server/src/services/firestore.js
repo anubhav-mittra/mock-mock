@@ -1,10 +1,20 @@
-const admin = require('firebase-admin');
+// Conditionally load firebase-admin only if available
+let admin;
+try {
+  admin = require('firebase-admin');
+} catch (error) {
+  // Firebase Admin SDK not available - Firestore functions will not work
+  admin = null;
+}
 
 /**
  * Initializes Firestore with the provided Firebase credentials.
  * @param {object} credentials - Firebase service account credentials.
  */
 function initializeFirestore(credentials) {
+  if (!admin) {
+    throw new Error('Firebase Admin SDK is not installed. Install it with: npm install firebase-admin');
+  }
   if (!admin.apps.length) {
     admin.initializeApp({
       credential: admin.credential.cert(credentials),

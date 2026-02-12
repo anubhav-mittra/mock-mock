@@ -1,7 +1,6 @@
 const express = require('express');
 const fs = require('fs');
 const yaml = require('js-yaml');
-const admin = require('firebase-admin');
 const path = require('path');
 const staticResponses = require('./config/static-responses'); // Import static responses
 const { handleGet, handlePost, handlePatch, handlePut, handleDelete } = require('./handlers/request-handlers');
@@ -9,12 +8,18 @@ const { handleGet, handlePost, handlePatch, handlePut, handleDelete } = require(
 // Initialize Firebase Admin SDK if Firestore is enabled
 const isFirestoreAvailable = process.env.USE_FIRESTORE === 'true';
 let db;
+let admin;
 if (isFirestoreAvailable) {
-  const serviceAccount = require('./path/to/serviceAccountKey.json');
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-  });
-  db = admin.firestore();
+  try {
+    admin = require('firebase-admin');
+    const serviceAccount = require('./path/to/serviceAccountKey.json');
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount),
+    });
+    db = admin.firestore();
+  } catch (error) {
+    console.warn('Firebase Admin SDK not available. Using in-memory storage only.');
+  }
 }
 
 const app = express();
@@ -78,7 +83,11 @@ Object.entries(spec.paths).forEach(([route, pathItem]) => {
 });
 
 // Start server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Mock server running on port ${PORT}`));
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Mock server running on port ${PORT}`);
+  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`Firestore enabled: ${isFirestoreAvailable}`);
+});
 
 module.exports = app;
