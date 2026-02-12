@@ -1,0 +1,3 @@
+name: mock-mock-infra
+description: Infrastructure as Code for Mock-Mock API Server on GCP
+runtime: nodejs

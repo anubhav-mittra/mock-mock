@@ -1,0 +1,14 @@
+config:
+  gcp:project: YOUR_PROD_PROJECT_ID
+  gcp:region: us-central1
+  mock-mock:environment: prod
+  mock-mock:appVersion: latest
+  mock-mock:minInstances: 1
+  mock-mock:maxInstances: 10
+  mock-mock:memory: 512Mi
+  mock-mock:cpu: "1"
+  mock-mock:useMinimalImage: false
+  mock-mock:firestoreRegion: us-central1
+  mock-mock:allowUnauthenticated: false
+  mock-mock:corsOrigins: "https://yourdomain.com,https://app.yourdomain.com"
+  mock-mock:domainMapping: ""

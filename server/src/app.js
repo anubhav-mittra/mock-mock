@@ -12,13 +12,16 @@ let admin;
 if (isFirestoreAvailable) {
   try {
     admin = require('firebase-admin');
-    const serviceAccount = require('./path/to/serviceAccountKey.json');
+    const serviceAccountPath = process.env.FIREBASE_SERVICE_ACCOUNT_PATH || '/app/config/serviceAccountKey.json';
+    const serviceAccount = require(serviceAccountPath);
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccount),
     });
     db = admin.firestore();
+    console.log('✓ Firebase Admin SDK initialized successfully');
   } catch (error) {
-    console.warn('Firebase Admin SDK not available. Using in-memory storage only.');
+    console.warn('⚠ Firebase Admin SDK not available. Using in-memory storage only.');
+    console.warn('Error:', error.message);
   }
 }
 

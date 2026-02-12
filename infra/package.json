@@ -1,0 +1,32 @@
+{
+  "name": "mock-mock-infra",
+  "version": "1.0.0",
+  "description": "Pulumi infrastructure for Mock-Mock API Server",
+  "main": "index.ts",
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint .",
+    "format": "prettier --write \"**/*.ts\""
+  },
+  "keywords": [
+    "pulumi",
+    "gcp",
+    "cloud-run",
+    "infrastructure"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@typescript-eslint/eslint-plugin": "^6.19.0",
+    "@typescript-eslint/parser": "^6.19.0",
+    "eslint": "^8.56.0",
+    "prettier": "^3.2.4",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "@pulumi/gcp": "^7.15.0",
+    "@pulumi/docker-build": "^0.0.5",
+    "@pulumi/pulumi": "^3.105.0"
+  }
+}

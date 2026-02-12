@@ -1,0 +1,36 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Build output
+bin/
+*.js
+*.js.map
+!components/*.ts
+!index.ts
+
+# Secrets - NEVER commit these!
+secrets/*.json
+!secrets/.gitkeep
+
+# Pulumi
+.pulumi/
+*.pulumi.json
+
+# Environment
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*

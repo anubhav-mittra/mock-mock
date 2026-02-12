@@ -1,0 +1,5 @@
+encryptionsalt: v1:OBWk9erVYu4=:v1:aHP22UJXLRNqMEb2:x9KqrkVw2XWy1fP6+zA7EI5Rp51llQ==
+config:
+  gcp:project: dev-proj-480923
+  gcp:region: europe-north1
+  mock-mock:environment: dev
